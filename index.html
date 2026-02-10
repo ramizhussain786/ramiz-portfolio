@@ -1,96 +1,625 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramiz Hussain | IT & Systems Administrator</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <title>Ramiz Hussain | IT Business Applications & Oracle ERP Specialist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#6366f1',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        card: '#1e293b',
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-<header>
-    <div class="container">
-        <h1>Ramiz Hussain</h1>
-        <p>IT Support | ICT Admin | Oracle ERP | Infrastructure & IoT</p>
-        <div class="links">
-            <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank">LinkedIn</a>
-            <a href="mailto:your-email@example.com">Email</a>
+    <style>
+        body {
+            background-color: #020617;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(14, 165, 233, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Grid Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Skill Tag Animation */
+        .skill-tag {
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+        .skill-tag:hover::before {
+            left: 100%;
+        }
+
+        /* Terminal Cursor */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1em;
+            background-color: #38bdf8;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #020617;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="flex flex-col items-center gap-4">
+            <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div class="text-primary font-mono text-sm">Initializing Profile...</div>
         </div>
     </div>
-</header>
 
-<section class="about container">
-    <h2>About Me</h2>
-    <p>
-        Results-driven IT professional with hands-on experience in IT support, 
-        enterprise applications, Oracle ERP/HRMS, infrastructure management, 
-        cybersecurity fundamentals, and IoT-based solutions. Skilled in managing 
-        biometric systems, server environments, integrations, and business-critical 
-        applications.
-    </p>
-</section>
-
-<section class="skills container">
-    <h2>Core Skills</h2>
-    <div class="skill-grid">
-        <span>IT Support & Troubleshooting</span>
-        <span>Windows Server & Active Directory</span>
-        <span>Oracle ERP / HCM / HRMS</span>
-        <span>Biometric & Attendance Systems</span>
-        <span>Virtualization & Homelab</span>
-        <span>Cybersecurity Fundamentals</span>
-        <span>Docker & Automation</span>
-        <span>IoT Systems & Tracking Solutions</span>
-    </div>
-</section>
-
-<section class="experience container">
-    <h2>Experience</h2>
-
-    <div class="card">
-        <h3>IT Support / ICT Administrator</h3>
-        <p class="company">Dubai, UAE</p>
-        <ul>
-            <li>Managed IT infrastructure, user support, and system availability.</li>
-            <li>Administered Oracle ERP / HRMS roles and access controls.</li>
-            <li>Handled biometric devices, attendance integrations, and troubleshooting.</li>
-            <li>Supported virtualization, backups, and server maintenance.</li>
-        </ul>
+    <!-- Background Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 bg-grid"></div>
     </div>
 
-    <div class="card">
-        <h3>IoT & Systems Projects</h3>
-        <ul>
-            <li>Mall trolley tracking with geofencing and real-time alerts.</li>
-            <li>Airport staff tracking & operations management system.</li>
-            <li>Automation for domain join and software deployment.</li>
-        </ul>
-    </div>
-</section>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2 group cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold group-hover:rotate-12 transition-transform">RH</div>
+                    <span class="font-display font-bold text-xl tracking-tight">Ramiz<span class="text-primary">.dev</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#about" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">About</a>
+                        <a href="#experience" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Experience</a>
+                        <a href="#skills" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Skills</a>
+                        <a href="#projects" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Projects</a>
+                        <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="bg-primary/10 text-primary hover:bg-primary hover:text-white border border-primary/50 px-4 py-2 rounded-full text-sm font-medium transition-all">
+                            <i class="fab fa-linkedin mr-2"></i>Connect
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden glass border-t border-white/5" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#experience" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Experience</a>
+                <a href="#skills" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Skills</a>
+                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="text-primary block px-3 py-2 rounded-md text-base font-medium">LinkedIn Profile</a>
+            </div>
+        </div>
+    </nav>
 
-<section class="certifications container">
-    <h2>Certifications & Learning</h2>
-    <ul>
-        <li>CCNA (In Progress)</li>
-        <li>Google Cybersecurity Certificate</li>
-        <li>Docker & Linux Fundamentals</li>
-        <li>Oracle HCM / ERP Exposure</li>
-    </ul>
-</section>
+    <!-- Hero Section -->
+    <section id="about" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="order-2 lg:order-1 space-y-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        Available for Opportunities
+                    </div>
+                    
+                    <h1 class="text-5xl lg:text-7xl font-display font-bold leading-tight">
+                        <span id="typewriter" class="text-white"></span><span class="cursor"></span>
+                    </h1>
+                    
+                    <p class="text-xl text-gray-400 max-w-2xl leading-relaxed">
+                        Results-driven <span class="text-primary font-semibold">Oracle ERP & IT Infrastructure Specialist</span> based in Dubai. 
+                        Transforming enterprise operations through automation, cybersecurity, and digital transformation.
+                    </p>
 
-<section class="contact container">
-    <h2>Contact</h2>
-    <p>
-        📍 Dubai, UAE<br>
-        🔗 <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank">
-            linkedin.com/in/ramiz-hussain786
-        </a>
-    </p>
-</section>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#experience" class="px-8 py-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary/25 flex items-center gap-2 group">
+                            View Experience <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="px-8 py-4 glass hover:bg-white/5 text-white rounded-lg font-semibold transition-all flex items-center gap-2">
+                            <i class="fab fa-linkedin text-[#0077b5]"></i> LinkedIn
+                        </a>
+                    </div>
 
-<footer>
-    <p>© 2026 Ramiz Hussain | Hosted on GitHub Pages</p>
-</footer>
+                    <div class="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
+                        <div>
+                            <div class="text-3xl font-bold text-white">3+</div>
+                            <div class="text-sm text-gray-500">Years Exp.</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">300+</div>
+                            <div class="text-sm text-gray-500">Users Supported</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">40%</div>
+                            <div class="text-sm text-gray-500">Efficiency Gain</div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Visual/Interactive Element -->
+                <div class="order-1 lg:order-2 flex justify-center lg:justify-end relative">
+                    <div class="relative w-80 h-80 lg:w-[500px] lg:h-[500px]">
+                        <!-- Decorative circles -->
+                        <div class="absolute inset-0 border border-primary/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                        <div class="absolute inset-4 border border-secondary/20 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+                        
+                        <!-- Profile Card -->
+                        <div class="absolute inset-0 m-auto w-64 h-64 lg:w-80 lg:h-80 glass-card rounded-2xl flex flex-col items-center justify-center p-6 text-center z-20">
+                            <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-4xl font-bold text-white mb-4 shadow-xl shadow-primary/20">
+                                RH
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Ramiz Hussain</h3>
+                            <p class="text-primary text-sm font-mono mt-1">Dubai, UAE</p>
+                            <div class="mt-6 flex gap-3">
+                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">Oracle ERP</span>
+                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">IoT</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Badges -->
+                        <div class="absolute top-10 -left-4 glass px-4 py-2 rounded-lg animate-bounce" style="animation-duration: 3s;">
+                            <i class="fas fa-shield-alt text-green-400 mr-2"></i> <span class="text-sm font-semibold">Security</span>
+                        </div>
+                        <div class="absolute bottom-20 -right-4 glass px-4 py-2 rounded-lg animate-bounce" style="animation-duration: 4s;">
+                            <i class="fas fa-cloud text-blue-400 mr-2"></i> <span class="text-sm font-semibold">Cloud</span>
+                        </div>
+                        <div class="absolute top-1/2 -right-8 glass px-4 py-2 rounded-lg animate-bounce" style="animation-duration: 5s;">
+                            <i class="fas fa-network-wired text-purple-400 mr-2"></i> <span class="text-sm font-semibold">Infra</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="experience" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Professional <span class="text-gradient">Journey</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">A track record of driving operational excellence and digital transformation.</p>
+            </div>
+
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-gradient-to-b from-primary to-secondary"></div>
+
+                <!-- Job 1 -->
+                <div class="relative mb-12 md:mb-24 reveal-on-scroll">
+                    <div class="md:flex items-center justify-between">
+                        <div class="md:w-5/12 mb-4 md:mb-0 md:text-right pr-0 md:pr-8 order-1">
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-primary md:border-l-0 md:border-r-4">
+                                <span class="text-primary font-mono text-sm">06/2025 - Present</span>
+                                <h3 class="text-xl font-bold text-white mt-2">IT Business Applications & Oracle ERP Specialist</h3>
+                                <p class="text-gray-400 font-medium mb-4">Imtiaz Developments • Dubai, UAE</p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-start md:justify-end gap-2">
+                                        <span>Administering Oracle ERP, HRMS, and OTL modules</span>
+                                        <i class="fas fa-check text-primary mt-1"></i>
+                                    </li>
+                                    <li class="flex items-start md:justify-end gap-2">
+                                        <span>Managing user access, roles, and licensing costs</span>
+                                        <i class="fas fa-check text-primary mt-1"></i>
+                                    </li>
+                                    <li class="flex items-start md:justify-end gap-2">
+                                        <span>Coordinating vendor patches and UAT testing</span>
+                                        <i class="fas fa-check text-primary mt-1"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-darker z-10"></div>
+                        <div class="md:w-5/12 pl-12 md:pl-8 order-2">
+                            <!-- Empty for layout balance -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job 2 -->
+                <div class="relative mb-12 md:mb-24 reveal-on-scroll">
+                    <div class="md:flex items-center justify-between">
+                        <div class="md:w-5/12 order-1 md:order-2 pl-0 md:pl-8">
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-secondary">
+                                <span class="text-secondary font-mono text-sm">09/2022 - 06/2025</span>
+                                <h3 class="text-xl font-bold text-white mt-2">ICT Administrator / IoT Engineer</h3>
+                                <p class="text-gray-400 font-medium mb-4">Farnek Services LLC & HITEK • Dubai, UAE</p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check text-secondary mt-1"></i>
+                                        <span>Managed M365 & Windows Server for 300+ users</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check text-secondary mt-1"></i>
+                                        <span>Automated workflows (40% faster resolution)</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check text-secondary mt-1"></i>
+                                        <span>Deployed IoT sensors & HITEK platform integration</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check text-secondary mt-1"></i>
+                                        <span>Implemented MFA & Endpoint Protection</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-4 border-darker z-10"></div>
+                        <div class="md:w-5/12 pr-12 md:pr-8 order-2 md:order-1 text-right">
+                            <!-- Empty -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Matrix -->
+    <section id="skills" class="py-24 bg-darker/50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Technical <span class="text-gradient">Arsenal</span></h2>
+                <p class="text-gray-400">Core competencies and tools mastered.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Core Skills -->
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6 text-blue-400">
+                        <i class="fas fa-server text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Infrastructure & Admin</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">Active Directory</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">DNS/DHCP</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">Group Policy</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">VMware</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">Hyper-V</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">Proxmox</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-blue-500/20 hover:text-blue-300 cursor-default">Windows Server</span>
+                    </div>
+                </div>
+
+                <!-- ERP & Apps -->
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6 text-purple-400">
+                        <i class="fas fa-database text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">ERP & Applications</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Oracle ERP</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Oracle HRMS</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">OTL</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Buddy HRMS</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Microsoft 365</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Intune</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-purple-500/20 hover:text-purple-300 cursor-default">Jira</span>
+                    </div>
+                </div>
+
+                <!-- Security & IoT -->
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll" style="transition-delay: 200ms;">
+                    <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-6 text-green-400">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Security & IoT</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">Cybersecurity</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">IAM</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">MFA</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">VPN/RDP</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">HITEK IoT</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">ZKTeco</span>
+                        <span class="skill-tag px-3 py-1 bg-white/5 rounded text-sm text-gray-300 hover:bg-green-500/20 hover:text-green-300 cursor-default">BioTime</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Skills Cloud -->
+            <div class="mt-12 glass-card p-8 rounded-2xl reveal-on-scroll">
+                <h3 class="text-lg font-semibold text-white mb-6 text-center">Additional Technologies</h3>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">PowerShell</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">Linux</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">Docker</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">Nextcloud</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">Odoo CRM</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">3CX VoIP</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">Plex/Jellyfin</span>
+                    <span class="px-4 py-2 bg-white/5 rounded-full text-gray-400 text-sm border border-white/5 hover:border-primary/50 hover:text-primary transition-colors">IT Asset Mgmt</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects & Labs -->
+    <section id="projects" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-display font-bold mb-2">Home <span class="text-gradient">Lab & Projects</span></h2>
+                    <p class="text-gray-400">Continuous learning through hands-on implementation.</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="text-sm text-gray-500 font-mono"><i class="fas fa-server mr-2"></i>Self-Hosted Environment</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project Card 1 -->
+                <div class="group relative h-64 rounded-xl overflow-hidden cursor-pointer reveal-on-scroll">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900 opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                        <i class="fas fa-network-wired text-4xl text-white mb-4 transform group-hover:scale-110 transition-transform"></i>
+                        <h3 class="text-xl font-bold text-white mb-2">Active Directory</h3>
+                        <p class="text-blue-100 text-sm opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0">
+                            Domain setup, OU structure, and GPO deployment for enterprise simulation.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="group relative h-64 rounded-xl overflow-hidden cursor-pointer reveal-on-scroll" style="transition-delay: 100ms;">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-900 opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                        <i class="fas fa-shield-alt text-4xl text-white mb-4 transform group-hover:scale-110 transition-transform"></i>
+                        <h3 class="text-xl font-bold text-white mb-2">Firewall & VPN</h3>
+                        <p class="text-purple-100 text-sm opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0">
+                            Configured secure remote access and perimeter defense rules.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="group relative h-64 rounded-xl overflow-hidden cursor-pointer reveal-on-scroll" style="transition-delay: 200ms;">
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-green-900 opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                        <i class="fab fa-docker text-4xl text-white mb-4 transform group-hover:scale-110 transition-transform"></i>
+                        <h3 class="text-xl font-bold text-white mb-2">Docker Virtualization</h3>
+                        <p class="text-green-100 text-sm opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0">
+                            Containerized application deployment and orchestration.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact / CTA -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-4xl font-display font-bold mb-6">Ready to <span class="text-gradient">Connect</span>?</h2>
+            <p class="text-xl text-gray-400 mb-8">
+                I'm currently open to new opportunities in IT Management, ERP Administration, and Infrastructure Architecture.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="mailto:ramiz.hussain@example.com" class="px-8 py-4 bg-white text-darker rounded-lg font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-envelope"></i> Email Me
+                </a>
+                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="px-8 py-4 glass border border-white/20 rounded-lg font-bold hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                    <i class="fab fa-linkedin text-[#0077b5]"></i> LinkedIn Profile
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-8 bg-darker">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-gray-500 text-sm">
+                &copy; 2025 Ramiz Hussain. All rights reserved.
+            </div>
+            <div class="flex gap-6">
+                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fab fa-linkedin text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fab fa-github text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Remove Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                initTypewriter();
+            }, 500);
+        });
+
+        // Typewriter Effect
+        function initTypewriter() {
+            const text = "IT Business Applications & Oracle ERP Specialist";
+            const element = document.getElementById('typewriter');
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                }
+            }
+            type();
+        }
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reveal elements on scroll
+        const revealElements = document.querySelectorAll('.reveal-on-scroll');
+        revealElements.forEach((element) => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+
+        // Parallax for background blobs
+        document.addEventListener('mousemove', (e) => {
+            const blobs = document.querySelectorAll('.animate-blob');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            blobs.forEach((blob, index) => {
+                const speed = (index + 1) * 20;
+                const xOffset = (window.innerWidth / 2 - e.clientX) / speed;
+                const yOffset = (window.innerHeight / 2 - e.clientY) / speed;
+                
+                blob.style.transform = `translate(${xOffset}px, ${yOffset}px) scale(${1 + (index * 0.1)})`;
+            });
+        });
+
+        // Active Navigation State
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-primary');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('text-primary');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

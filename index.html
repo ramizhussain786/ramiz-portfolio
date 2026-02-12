@@ -12,6 +12,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -28,6 +29,9 @@
                     animation: {
                         'blob': 'blob 7s infinite',
                         'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
                     },
                     keyframes: {
                         blob: {
@@ -39,6 +43,14 @@
                         fadeIn: {
                             '0%': { opacity: '0', transform: 'translateY(20px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #0ea5e9, 0 0 10px #0ea5e9, 0 0 15px #0ea5e9' },
+                            '100%': { boxShadow: '0 0 10px #0ea5e9, 0 0 20px #0ea5e9, 0 0 30px #0ea5e9' },
                         }
                     }
                 }
@@ -47,17 +59,32 @@
     </script>
 
     <style>
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        .light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+        }
+
         body {
-            background-color: #020617;
-            color: #e2e8f0;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: var(--bg-secondary);
         }
         ::-webkit-scrollbar-thumb {
             background: #334155;
@@ -72,6 +99,12 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .glass-card {
@@ -81,11 +114,21 @@
             transition: all 0.3s ease;
         }
 
+        .light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
         .glass-card:hover {
             background: rgba(30, 41, 59, 0.6);
             border-color: rgba(14, 165, 233, 0.3);
             transform: translateY(-5px);
             box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.2);
+        }
+
+        .light-mode .glass-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.3);
         }
 
         .text-gradient {
@@ -99,6 +142,11 @@
             background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        .light-mode .bg-grid {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
         }
 
         .skill-tag {
@@ -155,6 +203,287 @@
                 transform: translateX(-50%);
             }
         }
+
+        /* Music Player Styles */
+        .music-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
+        }
+
+        .music-toggle.playing {
+            animation: rotate 3s linear infinite;
+        }
+
+        .music-toggle.muted {
+            background: linear-gradient(135deg, #64748b, #475569);
+            animation: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #e2e8f0;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .music-toggle:hover .music-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .visualizer {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 20px;
+        }
+
+        .bar {
+            width: 3px;
+            background: white;
+            border-radius: 2px;
+            animation: equalizer 1s ease-in-out infinite;
+        }
+
+        .bar:nth-child(1) { animation-delay: 0s; height: 40%; }
+        .bar:nth-child(2) { animation-delay: 0.1s; height: 70%; }
+        .bar:nth-child(3) { animation-delay: 0.2s; height: 50%; }
+        .bar:nth-child(4) { animation-delay: 0.3s; height: 80%; }
+
+        .music-toggle.muted .bar,
+        .music-toggle:not(.playing) .bar {
+            animation: none;
+            height: 20%;
+        }
+
+        @keyframes equalizer {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        /* Modal for first interaction */
+        .music-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .music-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .music-modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .light-mode .music-modal-content {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .music-modal.active .music-modal-content {
+            transform: scale(1);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Project Cards */
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.7), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-card img {
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Contact Form */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .light-mode .form-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .form-input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Counter Animation */
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Custom Scrollbar for code blocks */
+        .code-block {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        /* Particle effect */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes particle-float {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-primary selection:text-white">
@@ -166,6 +495,50 @@
             <div class="text-primary font-mono text-sm">Initializing Profile...</div>
         </div>
     </div>
+
+    <!-- Music Modal -->
+    <div class="music-modal" id="musicModal">
+        <div class="music-modal-content">
+            <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <i class="fas fa-music text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Welcome to My Portfolio</h3>
+            <p class="text-gray-400 mb-6">Would you like to enable background music for a better experience?</p>
+            <div class="flex gap-4 justify-center">
+                <button onclick="enableMusic()" class="px-6 py-3 bg-primary hover:bg-primary/80 text-white rounded-lg font-semibold transition-all flex items-center gap-2 group">
+                    <i class="fas fa-play group-hover:scale-110 transition-transform"></i> Enable Music
+                </button>
+                <button onclick="disableMusic()" class="px-6 py-3 glass hover:bg-white/5 rounded-lg font-semibold transition-all">
+                    No Thanks
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=calm-background-for-video-121519.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <button class="music-toggle" id="musicToggle" onclick="toggleMusic()">
+        <div class="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="music-tooltip">
+            <span id="musicStatus">Click to play music</span>
+        </div>
+    </button>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Toggle Theme">
+        <i class="fas fa-sun text-yellow-400 text-xl" id="themeIcon"></i>
+    </button>
 
     <!-- Background Effects -->
     <div class="fixed inset-0 z-0 pointer-events-none">
@@ -188,8 +561,10 @@
                         <a href="#about" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">About</a>
                         <a href="#experience" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Experience</a>
                         <a href="#skills" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Skills</a>
+                        <a href="#homelab" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Home Lab</a>
+                        <a href="#projects" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Projects</a>
                         <a href="#achievements" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Achievements</a>
-                        <a href="#education" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Education</a>
+                        <a href="#contact" class="hover:text-primary transition-colors px-3 py-2 rounded-md text-sm font-medium">Contact</a>
                         <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="bg-primary/10 text-primary hover:bg-primary hover:text-white border border-primary/50 px-4 py-2 rounded-full text-sm font-medium transition-all">
                             <i class="fab fa-linkedin mr-2"></i>Connect
                         </a>
@@ -204,11 +579,13 @@
         </div>
         <div class="hidden md:hidden glass border-t border-white/5" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">About</a>
-                <a href="#experience" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Experience</a>
-                <a href="#skills" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Skills</a>
-                <a href="#achievements" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Achievements</a>
-                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="text-primary block px-3 py-2 rounded-md text-base font-medium">LinkedIn Profile</a>
+                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#experience" class="block px-3 py-2 rounded-md text-base font-medium">Experience</a>
+                <a href="#skills" class="block px-3 py-2 rounded-md text-base font-medium">Skills</a>
+                <a href="#homelab" class="block px-3 py-2 rounded-md text-base font-medium">Home Lab</a>
+                <a href="#projects" class="block px-3 py-2 rounded-md text-base font-medium">Projects</a>
+                <a href="#achievements" class="block px-3 py-2 rounded-md text-base font-medium">Achievements</a>
+                <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium">Contact</a>
             </div>
         </div>
     </nav>
@@ -218,7 +595,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div class="order-2 lg:order-1 space-y-8">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono animate-pulse">
                         <span class="relative flex h-2 w-2">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                           <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -231,9 +608,9 @@
                     </h1>
                     
                     <div class="space-y-4">
-                        <p class="text-xl text-gray-300 font-semibold">IT Business Applications & Oracle ERP Specialist</p>
-                        <p class="text-lg text-gray-400 leading-relaxed">
-                            Results-driven IT Business Applications, Oracle ERP, and Infrastructure Specialist with 3+ years of experience across IT administration, cybersecurity, enterprise applications, and IoT deployments. Strong expertise in Oracle ERP/HRMS administration, IT governance, virtualization, and endpoint security. Proven ability to automate workflows, enforce IT policies, optimize licensing costs, and align IT solutions with business objectives. Aspiring IT Manager / IT Applications Manager with a focus on digital transformation and strengthening organizational cybersecurity posture.
+                        <p class="text-xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">IT Business Applications & Oracle ERP Specialist</p>
+                        <p class="text-lg leading-relaxed opacity-80">
+                            Results-driven IT Business Applications, Oracle ERP, and Infrastructure Specialist with 3+ years of experience across IT administration, cybersecurity, enterprise applications, and IoT deployments. Strong expertise in Oracle ERP/HRMS administration, IT governance, virtualization, and endpoint security.
                         </p>
                     </div>
 
@@ -241,43 +618,42 @@
                         <a href="#experience" class="px-8 py-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary/25 flex items-center gap-2 group">
                             View Experience <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                         </a>
-                        <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="px-8 py-4 glass hover:bg-white/5 text-white rounded-lg font-semibold transition-all flex items-center gap-2">
-                            <i class="fab fa-linkedin text-[#0077b5]"></i> LinkedIn
+                        <a href="#contact" class="px-8 py-4 glass hover:bg-white/5 rounded-lg font-semibold transition-all flex items-center gap-2">
+                            <i class="fas fa-envelope"></i> Get In Touch
                         </a>
                     </div>
 
                     <div class="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
-                        <div>
-                            <div class="text-3xl font-bold text-white">3+</div>
-                            <div class="text-sm text-gray-500">Years Experience</div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white stat-number" data-target="3">0</div>
+                            <div class="text-sm opacity-60">Years Experience</div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-bold text-white">300+</div>
-                            <div class="text-sm text-gray-500">Users Supported</div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white stat-number" data-target="300">0</div>
+                            <div class="text-sm opacity-60">Users Supported</div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-bold text-white">80%</div>
-                            <div class="text-sm text-gray-500">Efficiency Gain</div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white stat-number" data-target="99">0</div>
+                            <div class="text-sm opacity-60">% Uptime</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="order-1 lg:order-2 flex justify-center lg:justify-end relative">
-                    <div class="relative w-80 h-80 lg:w-[500px] lg:h-[500px]">
+                    <div class="relative w-80 h-80 lg:w-[500px] lg:h-[500px] animate-float">
                         <div class="absolute inset-0 border border-primary/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
                         <div class="absolute inset-4 border border-secondary/20 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
                         
-                        <div class="absolute inset-0 m-auto w-64 h-64 lg:w-80 lg:h-80 glass-card rounded-2xl flex flex-col items-center justify-center p-6 text-center z-20">
+                        <div class="absolute inset-0 m-auto w-64 h-64 lg:w-80 lg:h-80 glass-card rounded-2xl flex flex-col items-center justify-center p-6 text-center z-20 animate-glow">
                             <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-4xl font-bold text-white mb-4 shadow-xl shadow-primary/20">
                                 RH
                             </div>
-                            <h3 class="text-xl font-bold text-white">Ramiz Hussain</h3>
+                            <h3 class="text-xl font-bold">Ramiz Hussain</h3>
                             <p class="text-primary text-sm font-mono mt-1">Dubai, United Arab Emirates</p>
-                            <div class="mt-6 flex gap-3">
-                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">Oracle-ERP</span>
-                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">IoT Engineer</span>
-                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">ICT Engineer</span>
-                                <span class="px-3 py-1 bg-white/5 rounded text-xs text-gray-300">HRMS Specialist</span>
+                            <div class="mt-6 flex flex-wrap justify-center gap-2">
+                                <span class="px-3 py-1 bg-white/5 rounded text-xs">Oracle-ERP</span>
+                                <span class="px-3 py-1 bg-white/5 rounded text-xs">IoT Engineer</span>
+                                <span class="px-3 py-1 bg-white/5 rounded text-xs">ICT Engineer</span>
                             </div>
                         </div>
 
@@ -301,80 +677,68 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Core <span class="text-gradient">Skills</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Expertise across enterprise IT infrastructure, ERP systems, and cybersecurity</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-server text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">IT Infrastructure & Systems Administration</h3>
+                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-server text-primary text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">IT Infrastructure & Systems Administration</h3>
                     </div>
+                    <p class="text-sm opacity-70">Windows Server, Linux, Active Directory, DNS, DHCP management</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group" style="transition-delay: 100ms;">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-database text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Oracle ERP / HRMS / OTL Administration</h3>
+                        <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-database text-secondary text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">Oracle ERP / HRMS / OTL Administration</h3>
                     </div>
+                    <p class="text-sm opacity-70">Module administration, user management, reporting, and optimization</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group" style="transition-delay: 200ms;">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-chart-line text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Business Applications Support & Reporting</h3>
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-chart-line text-purple-400 text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">Business Applications Support & Reporting</h3>
                     </div>
+                    <p class="text-sm opacity-70">BI tools, data analysis, and operational reporting</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-shield-alt text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Cybersecurity, IAM, MFA, Endpoint Protection</h3>
+                        <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-shield-alt text-green-400 text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">Cybersecurity & IAM</h3>
                     </div>
+                    <p class="text-sm opacity-70">MFA, endpoint protection, identity and access management</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group" style="transition-delay: 100ms;">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-network-wired text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Active Directory, DNS, DHCP, Group Policy</h3>
+                        <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-cloud text-orange-400 text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">Virtualization & Cloud</h3>
                     </div>
+                    <p class="text-sm opacity-70">VMware, Hyper-V, Proxmox, Microsoft 365, Azure</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll group" style="transition-delay: 200ms;">
                     <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-cloud text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Virtualization: VMware, Hyper-V, Proxmox</h3>
+                        <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-microchip text-pink-400 text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold">IoT Systems Integration</h3>
                     </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-microchip text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">IoT Systems Integration & Deployment</h3>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-file-contract text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">IT Policy Development, Compliance & SOPs</h3>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-rocket text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Software Deployment & Automation (GPO, Intune)</h3>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-boxes text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">IT Asset, Inventory & Procurement Management</h3>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-vpn text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Remote Access: VPN, RDP, Intune</h3>
-                    </div>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i class="fas fa-handshake text-primary text-xl"></i>
-                        <h3 class="font-semibold text-white">Vendor Management, Documentation & Training</h3>
-                    </div>
+                    <p class="text-sm opacity-70">Sensor deployment, gateway configuration, platform integration</p>
                 </div>
             </div>
         </div>
@@ -394,35 +758,27 @@
                 <div class="relative mb-16 pl-8 md:pl-0 reveal-on-scroll">
                     <div class="md:flex items-center justify-between">
                         <div class="md:w-5/12 mb-4 md:mb-0 md:text-right md:pr-8 order-1">
-                            <div class="glass-card p-6 rounded-xl border-l-4 border-primary md:border-l-0 md:border-r-4 text-left md:text-right">
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-primary md:border-l-0 md:border-r-4 text-left md:text-right hover:shadow-lg hover:shadow-primary/20 transition-all">
                                 <span class="text-primary font-mono text-sm">June 2025 – Present</span>
-                                <h3 class="text-xl font-bold text-white mt-2">IT Business Applications & Oracle ERP Specialist</h3>
-                                <p class="text-gray-400 font-medium mb-4">Imtiaz Developments – Dubai, UAE</p>
-                                <ul class="space-y-3 text-sm text-gray-300">
+                                <h3 class="text-xl font-bold mt-2">IT Business Applications & Oracle ERP Specialist</h3>
+                                <p class="opacity-60 font-medium mb-4">Imtiaz Developments – Dubai, UAE</p>
+                                <ul class="space-y-3 text-sm opacity-80">
                                     <li class="flex items-start gap-2 md:flex-row-reverse">
                                         <span>Administer Oracle ERP / HRMS / OTL modules, ensuring high availability and business continuity.</span>
                                         <i class="fas fa-check text-primary mt-1 flex-shrink-0"></i>
                                     </li>
                                     <li class="flex items-start gap-2 md:flex-row-reverse">
-                                        <span>Manage user access, role provisioning, and segregation of duties to maintain compliance and reduce license overuse.</span>
+                                        <span>Manage user access, role provisioning, and segregation of duties to maintain compliance.</span>
                                         <i class="fas fa-check text-primary mt-1 flex-shrink-0"></i>
                                     </li>
                                     <li class="flex items-start gap-2 md:flex-row-reverse">
-                                        <span>Coordinate with Oracle vendors and partners for patches, upgrades, enhancements, and change requests.</span>
-                                        <i class="fas fa-check text-primary mt-1 flex-shrink-0"></i>
-                                    </li>
-                                    <li class="flex items-start gap-2 md:flex-row-reverse">
-                                        <span>Support ERP-HRMS, payroll, attendance, and core business processes; generate operational and management reports.</span>
-                                        <i class="fas fa-check text-primary mt-1 flex-shrink-0"></i>
-                                    </li>
-                                    <li class="flex items-start gap-2 md:flex-row-reverse">
-                                        <span>Conduct UAT, user training sessions, post-go-live support, and ongoing ERP documentation.</span>
+                                        <span>Coordinate with Oracle vendors for patches, upgrades, and change requests.</span>
                                         <i class="fas fa-check text-primary mt-1 flex-shrink-0"></i>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-darker z-10"></div>
+                        <div class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-darker z-10 animate-pulse"></div>
                         <div class="md:w-5/12 pl-8 md:pl-8 order-2"></div>
                     </div>
                 </div>
@@ -431,14 +787,14 @@
                 <div class="relative mb-16 pl-8 md:pl-0 reveal-on-scroll">
                     <div class="md:flex items-center justify-between">
                         <div class="md:w-5/12 order-1 md:order-2 pl-0 md:pl-8">
-                            <div class="glass-card p-6 rounded-xl border-l-4 border-secondary">
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-secondary hover:shadow-lg hover:shadow-secondary/20 transition-all">
                                 <span class="text-secondary font-mono text-sm">Sep 2022 – Jun 2025</span>
-                                <h3 class="text-xl font-bold text-white mt-2">ICT Administrator / IoT Engineer / HRMS & Procurement Specialist</h3>
-                                <p class="text-gray-400 font-medium mb-4">Farnek Services LLC & HITEK Services – Dubai, UAE</p>
-                                <ul class="space-y-3 text-sm text-gray-300">
+                                <h3 class="text-xl font-bold mt-2">ICT Administrator / IoT Engineer</h3>
+                                <p class="opacity-60 font-medium mb-4">Farnek Services LLC & HITEK Services – Dubai, UAE</p>
+                                <ul class="space-y-3 text-sm opacity-80">
                                     <li class="flex items-start gap-2">
                                         <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Managed Windows Server and Microsoft 365 environments, providing Tier 1 & Tier 2 IT support for 300+ users.</span>
+                                        <span>Managed Windows Server and Microsoft 365 environments for 300+ users.</span>
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
@@ -446,31 +802,11 @@
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Performed site surveys and deployed IoT systems, integrating gateways and sensors with the HITEK IoT platform.</span>
+                                        <span>Deployed IoT systems at Expo City Dubai and Dubai Airport.</span>
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Supported Buddy HRMS, procurement workflows, IT asset management, and inventory audits.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Administered Active Directory, DNS, DHCP, Group Policy, and Windows Server environments.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Implemented MFA, endpoint protection, and password policies, significantly strengthening security posture.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Managed VMware and Hyper-V virtual environments and secure remote access via VPN, RDP, and Intune.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Supported Oracle HRMS users, biometric attendance integrations, and prepared IT and compliance reports.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-secondary mt-1 flex-shrink-0"></i>
-                                        <span>Developed SOPs, access control policies, and IT security standards.</span>
+                                        <span>Implemented MFA and endpoint protection, strengthening security posture.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -483,6 +819,255 @@
         </div>
     </section>
 
+    <!-- Home Lab Infrastructure Section -->
+    <section id="homelab" class="py-24 bg-darker/50 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Home Lab <span class="text-gradient">Infrastructure</span></h2>
+                <p class="opacity-60 max-w-2xl mx-auto">
+                    Enterprise-grade virtualization, containerization, and secure networking in a self-hosted environment
+                </p>
+            </div>
+
+            <!-- Lab Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                <div class="glass-card p-4 rounded-xl text-center group hover:scale-105 transition-transform">
+                    <div class="text-2xl font-bold text-primary stat-number" data-target="3">0</div>
+                    <div class="text-xs opacity-60">Virtualization Platforms</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl text-center group hover:scale-105 transition-transform">
+                    <div class="text-2xl font-bold text-secondary stat-number" data-target="10">0</div>
+                    <div class="text-xs opacity-60">Self-Hosted Services</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl text-center group hover:scale-105 transition-transform">
+                    <div class="text-2xl font-bold text-purple-400">99.9%</div>
+                    <div class="text-xs opacity-60">Uptime Achieved</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl text-center group hover:scale-105 transition-transform">
+                    <div class="text-2xl font-bold text-green-400">24/7</div>
+                    <div class="text-xs opacity-60">Remote Access</div>
+                </div>
+            </div>
+
+            <!-- CasaOS -->
+            <div class="glass-card rounded-2xl overflow-hidden mb-8 reveal-on-scroll group">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                    <div class="relative overflow-hidden h-64 lg:h-auto">
+                        <img src="/mnt/kimi/upload/c69ca138936911076034f13e4982f4c3bbd744c6.jpeg" 
+                             alt="CasaOS Dashboard" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darker/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                            <span class="text-sm">Real-time system monitoring and container management</span>
+                        </div>
+                    </div>
+                    <div class="p-8 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-cloud text-blue-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">CasaOS Personal Cloud</h3>
+                                <p class="text-blue-400 text-sm">Docker-Based Application Management</p>
+                            </div>
+                        </div>
+                        <p class="opacity-70 mb-6 leading-relaxed">
+                            Centralized home server dashboard managing containerized applications with real-time monitoring 
+                            (CPU: 100%, RAM: 59%, 52°C thermal), storage tracking (1.11TB/1.85TB), and network visualization. 
+                            Integrated AdGuard Home, Plex, Nextcloud, and Uptime Kuma.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs border border-blue-500/20">Docker</span>
+                            <span class="skill-tag px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs border border-blue-500/20">Container Management</span>
+                            <span class="skill-tag px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs border border-blue-500/20">System Monitoring</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proxmox -->
+            <div class="glass-card rounded-2xl overflow-hidden mb-8 reveal-on-scroll group">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                    <div class="p-8 flex flex-col justify-center order-2 lg:order-1">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-server text-orange-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">Proxmox Virtual Environment</h3>
+                                <p class="text-orange-400 text-sm">Enterprise Virtualization Platform</p>
+                            </div>
+                        </div>
+                        <p class="opacity-70 mb-6 leading-relaxed">
+                            Multi-node Proxmox VE cluster supporting KVM full virtualization and LXC containers. 
+                            Managing Windows Server 2022 DCs, Linux application servers, with HA clustering, 
+                            live migration, and ZFS-based software-defined storage for redundancy and performance.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 bg-orange-500/10 text-orange-400 rounded-full text-xs border border-orange-500/20">KVM</span>
+                            <span class="skill-tag px-3 py-1 bg-orange-500/10 text-orange-400 rounded-full text-xs border border-orange-500/20">LXC</span>
+                            <span class="skill-tag px-3 py-1 bg-orange-500/10 text-orange-400 rounded-full text-xs border border-orange-500/20">ZFS</span>
+                            <span class="skill-tag px-3 py-1 bg-orange-500/10 text-orange-400 rounded-full text-xs border border-orange-500/20">High Availability</span>
+                        </div>
+                    </div>
+                    <div class="relative overflow-hidden h-64 lg:h-auto order-1 lg:order-2">
+                        <img src="/mnt/kimi/upload/Proxmox-Virtual-Environment-Cluster-Summary.png" 
+                             alt="Proxmox VE" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tailscale -->
+            <div class="glass-card rounded-2xl overflow-hidden mb-8 reveal-on-scroll group">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                    <div class="relative overflow-hidden h-64 lg:h-auto">
+                        <img src="/mnt/kimi/upload/Screenshot 2026-02-12 092820.png" 
+                             alt="Tailscale Network" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-8 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-network-wired text-purple-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">Tailscale Mesh VPN</h3>
+                                <p class="text-purple-400 text-sm">Zero-Trust Network Architecture</p>
+                            </div>
+                        </div>
+                        <p class="opacity-70 mb-6 leading-relaxed">
+                            Zero-configuration mesh VPN with 10+ endpoints: TrueNAS, Home Assistant, Windows 11, Android. 
+                            Configured subnet routing, exit nodes, and ACL policies. Secure remote access without 
+                            port forwarding or complex firewall rules using WireGuard protocol.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 bg-purple-500/10 text-purple-400 rounded-full text-xs border border-purple-500/20">WireGuard</span>
+                            <span class="skill-tag px-3 py-1 bg-purple-500/10 text-purple-400 rounded-full text-xs border border-purple-500/20">Zero-Trust</span>
+                            <span class="skill-tag px-3 py-1 bg-purple-500/10 text-purple-400 rounded-full text-xs border border-purple-500/20">Mesh VPN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Showcase Section -->
+    <section id="projects" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Featured <span class="text-gradient">Projects</span></h2>
+                <p class="opacity-60 max-w-2xl mx-auto">Real-world implementations and automation solutions</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project 1 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" onclick="showProjectDetails('erp-automation')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop" alt="ERP Automation" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">ERP Workflow Automation</h3>
+                        <p class="text-sm text-gray-300 mb-3">Automated Oracle ERP processes reducing manual tasks by 60%</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-primary/20 text-primary text-xs rounded">Oracle ERP</span>
+                            <span class="px-2 py-1 bg-secondary/20 text-secondary text-xs rounded">Automation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" style="transition-delay: 100ms;" onclick="showProjectDetails('iot-deployment')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop" alt="IoT Deployment" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">Smart Building IoT</h3>
+                        <p class="text-sm text-gray-300 mb-3">Large-scale sensor deployment at Expo City Dubai</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">IoT</span>
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Sensors</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" style="transition-delay: 200ms;" onclick="showProjectDetails('security-hardening')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=400&fit=crop" alt="Security" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">Security Hardening</h3>
+                        <p class="text-sm text-gray-300 mb-3">Enterprise MFA and endpoint protection implementation</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">Security</span>
+                            <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">MFA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" onclick="showProjectDetails('helpdesk-automation')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop" alt="Helpdesk" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">Helpdesk Automation</h3>
+                        <p class="text-sm text-gray-300 mb-3">40% reduction in ticket resolution time</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded">ITSM</span>
+                            <span class="px-2 py-1 bg-primary/20 text-primary text-xs rounded">Automation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" style="transition-delay: 100ms;" onclick="showProjectDetails('infrastructure-migration')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop" alt="Infrastructure" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">Cloud Migration</h3>
+                        <p class="text-sm text-gray-300 mb-3">Hybrid cloud infrastructure deployment</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Azure</span>
+                            <span class="px-2 py-1 bg-secondary/20 text-secondary text-xs rounded">Hybrid</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 6 -->
+                <div class="project-card glass-card reveal-on-scroll group cursor-pointer" style="transition-delay: 200ms;" onclick="showProjectDetails('disaster-recovery')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=400&fit=crop" alt="Disaster Recovery" class="w-full h-full object-cover">
+                    </div>
+                    <div class="project-overlay">
+                        <h3 class="text-xl font-bold text-white mb-2">Disaster Recovery</h3>
+                        <p class="text-sm text-gray-300 mb-3">Backup automation and business continuity planning</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Backup</span>
+                            <span class="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded">BCP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Details Modal -->
+    <div id="projectModal" class="fixed inset-0 z-[9999] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeProjectModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8 relative animate-fade-in">
+                <button onclick="closeProjectModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div id="projectModalContent">
+                    <!-- Content injected via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Key Achievements -->
     <section id="achievements" class="py-24 bg-darker/50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -491,229 +1076,200 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500">
-                    <i class="fas fa-trophy text-yellow-500 text-2xl mb-3"></i>
-                    <p class="text-gray-300">Automated ICT Helpdesk operations, achieving a 40% reduction in ticket resolution time.</p>
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-trophy text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">40% Efficiency Gain</h3>
+                    </div>
+                    <p class="opacity-70 text-sm">Automated ICT Helpdesk operations, reducing ticket resolution time significantly</p>
                 </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500" style="transition-delay: 100ms;">
-                    <i class="fas fa-trophy text-yellow-500 text-2xl mb-3"></i>
-                    <p class="text-gray-300">Successfully supported and enhanced Oracle ERP / HRMS business processes.</p>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500" style="transition-delay: 200ms;">
-                    <i class="fas fa-trophy text-yellow-500 text-2xl mb-3"></i>
-                    <p class="text-gray-300">Delivered large-scale IoT deployments at Expo City Dubai and Dubai Airport.</p>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500">
-                    <i class="fas fa-trophy text-yellow-500 text-2xl mb-3"></i>
-                    <p class="text-gray-300">Strengthened enterprise security through MFA, endpoint protection, and policy enforcement.</p>
-                </div>
-                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500" style="transition-delay: 100ms;">
-                    <i class="fas fa-trophy text-yellow-500 text-2xl mb-3"></i>
-                    <p class="text-gray-300">Standardized IT asset management, documentation, and audit readiness across departments.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Technical Skills -->
-    <section class="py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Technical <span class="text-gradient">Skills</span></h2>
-            </div>
-
-            <div class="glass-card p-8 rounded-2xl reveal-on-scroll">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-desktop text-primary"></i> Operating Systems
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Windows Server 2019/2025, Windows 10/11, Linux (Basic), macOS, iOS, Android</p>
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform" style="transition-delay: 100ms;">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-award text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Oracle ERP Excellence</h3>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-cloud text-primary"></i> Virtualization
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">VMware, Hyper-V, Proxmox</p>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-th-large text-primary"></i> Applications
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Oracle ERP / HRMS / OTL, Buddy HRMS, BioTime, ZKTeco, HITEK IoT Platform, Microsoft 365, JIRA</p>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-shield-alt text-primary"></i> Security
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">MFA, Endpoint Protection, IAM, Password Policy Enforcement</p>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-network-wired text-primary"></i> Networking
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">DNS, DHCP, VPN, RDP</p>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <i class="fas fa-tools text-primary"></i> Tools
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">ADUC, Group Policy Editor, PowerShell (Basic), IT Asset Management Tools</p>
-                    </div>
+                    <p class="opacity-70 text-sm">Successfully supported and enhanced Oracle ERP/HRMS business processes</p>
                 </div>
-            </div>
 
-            <!-- Additional Skills -->
-            <div class="mt-8 glass-card p-8 rounded-2xl reveal-on-scroll">
-                <h3 class="text-xl font-semibold text-white mb-6">Additional Skills & Home Lab Projects</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div>
-                        <h4 class="text-primary font-medium mb-2">Virtualization Platforms</h4>
-                        <p class="text-gray-400 text-sm">Proxmox, VMware</p>
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform" style="transition-delay: 200ms;">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-building text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Major Deployments</h3>
                     </div>
-                    <div>
-                        <h4 class="text-primary font-medium mb-2">File & Media Servers</h4>
-                        <p class="text-gray-400 text-sm">Nextcloud, Jellyfin, Plex</p>
-                    </div>
-                    <div>
-                        <h4 class="text-primary font-medium mb-2">VoIP</h4>
-                        <p class="text-gray-400 text-sm">3CX IP Softphone</p>
-                    </div>
-                    <div>
-                        <h4 class="text-primary font-medium mb-2">Cloud & SaaS</h4>
-                        <p class="text-gray-400 text-sm">Microsoft Office 365</p>
-                    </div>
+                    <p class="opacity-70 text-sm">Delivered large-scale IoT deployments at Expo City Dubai and Dubai Airport</p>
                 </div>
-                <div class="mt-6 pt-6 border-t border-white/10">
-                    <h4 class="text-primary font-medium mb-2">Home Lab Projects</h4>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">DNS</span>
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">DHCP</span>
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">Active Directory</span>
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">VPN</span>
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">Firewalls</span>
-                        <span class="px-3 py-1 bg-white/5 rounded text-sm text-gray-300">Docker</span>
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Security Posture</h3>
                     </div>
+                    <p class="opacity-70 text-sm">Strengthened enterprise security through MFA and endpoint protection</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform" style="transition-delay: 100ms;">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-clipboard-check text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Audit Readiness</h3>
+                    </div>
+                    <p class="opacity-70 text-sm">Standardized IT asset management and documentation across departments</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl reveal-on-scroll border-l-4 border-yellow-500 hover:translate-x-2 transition-transform" style="transition-delay: 200ms;">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Team Leadership</h3>
+                    </div>
+                    <p class="opacity-70 text-sm">Trained 50+ users on ERP systems and IT security best practices</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Education -->
-    <section id="education" class="py-24 bg-darker/50 relative">
+    <section id="education" class="py-24 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Education & <span class="text-gradient">Certifications</span></h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="glass-card p-8 rounded-2xl reveal-on-scroll">
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll hover:shadow-lg hover:shadow-primary/10 transition-all">
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-graduation-cap text-primary text-xl"></i>
+                        <div class="w-14 h-14 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-graduation-cap text-primary text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Bachelor of Engineering (B.E.) – Information Technology</h3>
-                            <p class="text-gray-400 mb-1">H.K.B.K College of Engineering, Bangalore, India</p>
-                            <p class="text-primary font-mono text-sm">2021</p>
+                            <h3 class="text-xl font-bold mb-2">Bachelor of Engineering (B.E.)</h3>
+                            <p class="text-primary font-medium mb-1">Information Technology</p>
+                            <p class="opacity-60 mb-2">H.K.B.K College of Engineering, Bangalore, India</p>
+                            <p class="text-primary font-mono text-sm bg-primary/10 inline-block px-3 py-1 rounded-full">2021</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass-card p-8 rounded-2xl reveal-on-scroll" style="transition-delay: 100ms;">
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll hover:shadow-lg hover:shadow-secondary/10 transition-all" style="transition-delay: 100ms;">
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-school text-secondary text-xl"></i>
+                        <div class="w-14 h-14 bg-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-school text-secondary text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Higher Secondary Education – Computer Science</h3>
-                            <p class="text-gray-400 mb-1">PAVB Matric Higher Secondary School, Bangalore, India</p>
-                            <p class="text-secondary font-mono text-sm">2016</p>
+                            <h3 class="text-xl font-bold mb-2">Higher Secondary Education</h3>
+                            <p class="text-secondary font-medium mb-1">Computer Science</p>
+                            <p class="opacity-60 mb-2">PAVB Matric Higher Secondary School, Bangalore, India</p>
+                            <p class="text-secondary font-mono text-sm bg-secondary/10 inline-block px-3 py-1 rounded-full">2016</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-8 glass-card p-8 rounded-2xl reveal-on-scroll">
+            <div class="mt-8 glass-card p-8 rounded-2xl reveal-on-scroll hover:shadow-lg hover:shadow-green-500/10 transition-all">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-id-card text-green-500 text-xl"></i>
+                    <div class="w-14 h-14 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-id-card text-green-500 text-2xl"></i>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-2">UAE Driving License: Valid (Light Motor Vehicle – LMV)</h3>
-                        <p class="text-gray-400">Validity: 05-10-2025 to 05-10-2027</p>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold mb-2">UAE Driving License - LMV</h3>
+                        <p class="opacity-60">Valid: 05-10-2025 to 05-10-2027</p>
                     </div>
+                    <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">Active</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Hobbies & Languages -->
-    <section class="py-24">
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-darker/50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="glass-card p-8 rounded-2xl reveal-on-scroll">
-                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-heart text-red-500"></i> Hobbies & Interests
-                    </h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3 text-gray-300">
-                            <i class="fas fa-server text-primary mt-1"></i>
-                            <span><strong class="text-white">Home Lab Building:</strong> Experiment with virtualization, network services, and automation.</span>
-                        </li>
-                        <li class="flex items-start gap-3 text-gray-300">
-                            <i class="fas fa-chart-line text-primary mt-1"></i>
-                            <span><strong class="text-white">Equity Market Analysis:</strong> Analyze trends, manage investments, and apply risk analysis.</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="glass-card p-8 rounded-2xl reveal-on-scroll" style="transition-delay: 100ms;">
-                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fas fa-language text-primary"></i> Languages
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-white font-medium">English</span>
-                            <span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">Fluent</span>
-                        </div>
-                        <div class="w-full bg-white/10 rounded-full h-2">
-                            <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal-on-scroll">
+                    <h2 class="text-4xl font-display font-bold mb-6">Let's <span class="text-gradient">Connect</span></h2>
+                    <p class="opacity-70 mb-8 text-lg">
+                        I'm currently open to new opportunities in IT Management, ERP Administration, and Infrastructure Architecture. 
+                        Feel free to reach out for collaborations or just to say hello!
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Location</h4>
+                                <p class="opacity-60">Dubai, United Arab Emirates</p>
+                            </div>
                         </div>
                         
-                        <div class="flex justify-between items-center">
-                            <span class="text-white font-medium">Hindi</span>
-                            <span class="px-3 py-1 bg-secondary/20 text-secondary rounded-full text-sm">Advanced</span>
-                        </div>
-                        <div class="w-full bg-white/10 rounded-full h-2">
-                            <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-envelope text-secondary text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Email</h4>
+                                <a href="mailto:ramiz.hussain@example.com" class="opacity-60 hover:text-primary transition-colors">ramiz.hussain@example.com</a>
+                            </div>
                         </div>
                         
-                        <div class="flex justify-between items-center">
-                            <span class="text-white font-medium">Tamil</span>
-                            <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Native</span>
-                        </div>
-                        <div class="w-full bg-white/10 rounded-full h-2">
-                            <div class="bg-purple-500 h-2 rounded-full" style="width: 100%"></div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-linkedin text-purple-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">LinkedIn</h4>
+                                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="opacity-60 hover:text-primary transition-colors">linkedin.com/in/ramiz-hussain786</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Contact / CTA -->
-    <section class="py-24 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent"></div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 class="text-4xl font-display font-bold mb-6">Ready to <span class="text-gradient">Connect</span>?</h2>
-            <p class="text-xl text-gray-400 mb-8">
-                I'm currently open to new opportunities in IT Management, ERP Administration, and Infrastructure Architecture.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="px-8 py-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2">
-                    <i class="fab fa-linkedin"></i> Connect on LinkedIn
-                </a>
+                    <div class="mt-8 flex gap-4">
+                        <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="w-12 h-12 rounded-lg bg-[#0077b5]/20 flex items-center justify-center text-[#0077b5] hover:bg-[#0077b5] hover:text-white transition-all">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 rounded-2xl reveal-on-scroll">
+                    <form id="contactForm" onsubmit="handleSubmit(event)">
+                        <div class="mb-6">
+                            <label class="form-label">Your Name</label>
+                            <input type="text" class="form-input" placeholder="John Doe" required>
+                        </div>
+                        <div class="mb-6">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" placeholder="john@example.com" required>
+                        </div>
+                        <div class="mb-6">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-input" placeholder="Project Inquiry" required>
+                        </div>
+                        <div class="mb-6">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-input h-32 resize-none" placeholder="Tell me about your project..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 group">
+                            Send Message <i class="fas fa-paper-plane group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
@@ -721,27 +1277,39 @@
     <!-- Footer -->
     <footer class="border-t border-white/5 py-8 bg-darker">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-gray-500 text-sm">
+            <div class="opacity-60 text-sm">
                 &copy; 2025 Ramiz Hussain. All rights reserved.
             </div>
             <div class="flex gap-6">
-                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                <a href="https://www.linkedin.com/in/ramiz-hussain786" target="_blank" class="opacity-60 hover:text-primary transition-colors">
                     <i class="fab fa-linkedin text-xl"></i>
                 </a>
             </div>
         </div>
     </footer>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-24 right-8 glass px-6 py-4 rounded-lg transform translate-x-full transition-transform duration-300 z-[9999] flex items-center gap-3">
+        <i class="fas fa-check-circle text-green-400"></i>
+        <span id="toastMessage">Message sent successfully!</span>
+    </div>
+
     <script>
+        // Loader
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.display = 'none';
                 initTypewriter();
+                animateStats();
+                setTimeout(() => {
+                    document.getElementById('musicModal').classList.add('active');
+                }, 500);
             }, 500);
         });
 
+        // Typewriter Effect
         function initTypewriter() {
             const text = "IT Business Applications & Oracle ERP Specialist";
             const element = document.getElementById('typewriter');
@@ -757,6 +1325,174 @@
             type();
         }
 
+        // Stats Counter Animation
+        function animateStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        stat.textContent = target + (target === 99 ? '%' : target === 3 ? '+' : '+');
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current);
+                    }
+                }, 16);
+            });
+        }
+
+        // Music Control
+        let isPlaying = false;
+        const audio = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const musicStatus = document.getElementById('musicStatus');
+
+        function enableMusic() {
+            document.getElementById('musicModal').classList.remove('active');
+            audio.volume = 0.3;
+            audio.play().then(() => {
+                isPlaying = true;
+                musicToggle.classList.add('playing');
+                musicToggle.classList.remove('muted');
+                musicStatus.textContent = 'Music playing';
+            }).catch(e => {
+                musicStatus.textContent = 'Click to play music';
+            });
+        }
+
+        function disableMusic() {
+            document.getElementById('musicModal').classList.remove('active');
+            musicStatus.textContent = 'Music disabled';
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                musicToggle.classList.remove('playing');
+                musicToggle.classList.add('muted');
+                musicStatus.textContent = 'Click to resume';
+            } else {
+                audio.volume = 0.3;
+                audio.play().then(() => {
+                    isPlaying = true;
+                    musicToggle.classList.add('playing');
+                    musicToggle.classList.remove('muted');
+                    musicStatus.textContent = 'Music playing';
+                });
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.documentElement.classList.toggle('light-mode');
+            const icon = document.getElementById('themeIcon');
+            if (document.documentElement.classList.contains('light-mode')) {
+                icon.classList.remove('fa-sun', 'text-yellow-400');
+                icon.classList.add('fa-moon', 'text-gray-600');
+            } else {
+                icon.classList.remove('fa-moon', 'text-gray-600');
+                icon.classList.add('fa-sun', 'text-yellow-400');
+            }
+        }
+
+        // Project Details Modal
+        const projectDetails = {
+            'erp-automation': {
+                title: 'ERP Workflow Automation',
+                description: 'Designed and implemented automated workflows within Oracle ERP to streamline business processes. Reduced manual data entry by 60% and improved data accuracy through automated validation rules.',
+                technologies: ['Oracle ERP', 'SQL', 'Workflow Automation', 'PL/SQL'],
+                results: '60% reduction in manual tasks, 40% faster processing time'
+            },
+            'iot-deployment': {
+                title: 'Smart Building IoT Deployment',
+                description: 'Led the deployment of IoT sensor networks at Expo City Dubai and Dubai Airport. Integrated environmental sensors, occupancy detectors, and energy monitoring systems with the HITEK IoT platform.',
+                technologies: ['IoT Sensors', 'LoRaWAN', 'MQTT', 'Node-RED', 'InfluxDB'],
+                results: 'Real-time monitoring of 500+ sensors, 25% energy savings'
+            },
+            'security-hardening': {
+                title: 'Enterprise Security Hardening',
+                description: 'Implemented comprehensive security framework including MFA rollout, endpoint protection deployment, and password policy enforcement across 300+ user accounts.',
+                technologies: ['Microsoft Authenticator', 'CrowdStrike', 'Azure AD', 'Group Policy'],
+                results: 'Zero security breaches, 100% MFA adoption'
+            },
+            'helpdesk-automation': {
+                title: 'IT Helpdesk Automation',
+                description: 'Transformed manual IT support processes through automation. Implemented self-service portals, automated ticket routing, and proactive monitoring alerts.',
+                technologies: ['JIRA Service Desk', 'PowerShell', 'Python', 'REST APIs'],
+                results: '40% faster resolution, 50% reduction in repetitive tickets'
+            },
+            'infrastructure-migration': {
+                title: 'Hybrid Cloud Migration',
+                description: 'Planned and executed migration of on-premises infrastructure to hybrid cloud environment. Migrated 50+ VMs and implemented Azure AD Connect for seamless identity management.',
+                technologies: ['Azure', 'VMware', 'Windows Server', 'Azure AD Connect'],
+                results: '30% cost reduction, improved scalability and disaster recovery'
+            },
+            'disaster-recovery': {
+                title: 'Disaster Recovery Implementation',
+                description: 'Developed and tested comprehensive disaster recovery plan. Implemented automated backup solutions and documented recovery procedures for critical business systems.',
+                technologies: ['Veeam', 'ZFS', 'Replication', 'Documentation'],
+                results: 'RTO: 4 hours, RPO: 1 hour, 99.9% backup success rate'
+            }
+        };
+
+        function showProjectDetails(projectId) {
+            const project = projectDetails[projectId];
+            if (!project) return;
+            
+            const modal = document.getElementById('projectModal');
+            const content = document.getElementById('projectModalContent');
+            
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold mb-4 text-gradient">${project.title}</h2>
+                <p class="opacity-70 mb-6 leading-relaxed">${project.description}</p>
+                
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-3 text-primary">Technologies Used</h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${project.technologies.map(tech => `
+                            <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20">${tech}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <h3 class="font-semibold mb-2 text-green-400 flex items-center gap-2">
+                        <i class="fas fa-chart-line"></i> Key Results
+                    </h3>
+                    <p class="text-green-400/80">${project.results}</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        // Contact Form Handler
+        function handleSubmit(e) {
+            e.preventDefault();
+            showToast('Message sent successfully! I\'ll get back to you soon.');
+            document.getElementById('contactForm').reset();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
         const revealElements = document.querySelectorAll('.reveal-on-scroll');
@@ -777,6 +1513,7 @@
             );
         });
 
+        // Mouse parallax effect
         document.addEventListener('mousemove', (e) => {
             const blobs = document.querySelectorAll('.animate-blob');
             const x = e.clientX / window.innerWidth;
@@ -791,6 +1528,7 @@
             });
         });
 
+        // Active navigation highlighting
         const sections = document.querySelectorAll('section');
         const navLinks = document.querySelectorAll('nav a');
 
@@ -810,6 +1548,13 @@
                     link.classList.add('text-primary');
                 }
             });
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeProjectModal();
+            }
         });
     </script>
 </body>
